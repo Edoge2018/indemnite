@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import base64
+from io import BytesIO
 
 # ------------------------------
 # Configuration de la page
@@ -153,11 +155,22 @@ if file_input:
                     st.subheader("**Résultats des indemnités**")
                     st.dataframe(df_all_results, use_container_width=True)
 
-                    # Bouton pour exporter vers Excel
                     st.markdown("---")
-                    if st.button("📥 Exporter vers Excel", key="exporter_excel"):
-                        df_all_results.to_excel("Indemnites_aller_retour_avec_forfait.xlsx", index=False)
-                        st.success("Fichier exporté avec succès : **Indemnites_aller_retour_avec_forfait.xlsx**")
+
+                    # Bouton de téléchargement direct
+                    output = BytesIO()
+                    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                        df_all_results.to_excel(writer, index=False, sheet_name='Indemnités')
+
+                    excel_data = output.getvalue()
+
+                    st.download_button(
+                        label="📥 Télécharger les résultats (Excel)",
+                        data=excel_data,
+                        file_name="Indemnites_aller_retour_avec_forfait.xlsx",
+                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                        help="Cliquez pour télécharger le fichier Excel dans votre dossier Téléchargements"
+                    )
                 else:
                     st.warning("Aucun résultat à afficher. Vérifiez les communes sélectionnées.")
 
