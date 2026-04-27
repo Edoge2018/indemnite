@@ -1,0 +1,7 @@
+streamlit
+pandas # Version stable compatible avec Python 3.14
+openpyxl
+setuptools  # Évite les erreurs de build
+
+
+
